@@ -1,0 +1,28 @@
+name: Sincronizar fork con upstream
+
+on:
+  schedule:
+     - cron: "*/5 * * * *" # Cada 5 minutos
+  workflow_dispatch:       # Permite ejecutarlo manualmente
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Sincronizar develop con upstream
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configurar upstream
+        run: |
+          git remote add upstream https://github.com/amplixme/FS-0003.git
+          git fetch upstream develop
+          git checkout develop
+          git reset --hard upstream/develop
+          git push origin develop --force
